@@ -129,7 +129,7 @@
                 <button class="card__list--addList">Добавить еще одну колонку</button>
                 <div class="card__textarea">
                     <textarea class="card__add--textarea" name="card__text" id="card__text--list" cols="30" rows="10"
-                              placeholder="Введите название карточки"></textarea>
+                              placeholder="Введите название колонки"></textarea>
                     <div class="action__card">
                         <button onclick="addColumnFunc()" class="card__add--btn">Добавить колонку</button>
                         <svg class="symbol__close--cardAdd">

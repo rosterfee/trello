@@ -170,7 +170,7 @@
                 <div class="modal__group">
                     <label for="name_board" class="modal__team--label">Название доски</label>
 <#--                    <input type="text" name="name" id="name_board" class="modal__team--input" placeholder="Введите название доски">-->
-                    <@spring.formInput "boardCreatingForm.name" "placeholder='Введите название доски'"/>
+                    <@spring.formInput path="boardCreatingForm.name" attributes="placeholder='Введите название доски' class='modal__team--input'"/>
                     <@spring.showErrors separator="<br>" classOrStyle="error"/>
                     <div class="modal__team-undertext">Укажите название доски.</div>
                     <#if errors??>
@@ -184,7 +184,7 @@
 
                 <div class="modal__group">
                     <label for="name_team" class="modal__team--label">Выберите тип доски</label>
-                    <@spring.formSingleSelect path="boardCreatingForm.type" options=options />
+                    <@spring.formSingleSelect path="boardCreatingForm.type" attributes="class='modal__team--input'" options=options />
 <#--                    <select name="board_type" class="modal__team--input" id="name_board-team">-->
 <#--                        <option value="private">Приватная (доступна только по приглашению)</option>-->
 <#--                        <option value="public">Публичная (доступна всем пользователям в интернете)</option>-->
