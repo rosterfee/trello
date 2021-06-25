@@ -1,4 +1,4 @@
-package ru.itis.impl.services.prod;
+package ru.itis.impl.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,10 @@ import ru.itis.api.services.UsersService;
 import ru.itis.impl.entities.User;
 import ru.itis.impl.repositories.UsersRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class UsersServiceImpl implements UsersService {
@@ -47,5 +50,16 @@ public class UsersServiceImpl implements UsersService {
 
         return Optional.ofNullable(userDto);
 
+    }
+
+    @Override
+    public List<UserDTO> getAllByEmailContaining(String email) {
+        List<User> users = usersRepository.getAllByEmailContaining(email);
+        List<UserDTO> userDTOS = new ArrayList<>();
+        for (User user: users) {
+            userDTOS.add(modelMapper.map(user, UserDTO.class));
+        }
+        System.out.println(userDTOS);
+        return userDTOS;
     }
 }

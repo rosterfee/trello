@@ -1,4 +1,4 @@
-package ru.itis.impl.services.prod;
+package ru.itis.impl.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class SignUpServiceImpl implements SignUpService {
 
         User user = User.builder()
                 .name(signUpForm.getName())
-                .initials(UserInitialsGenerator.generate(signUpForm.getEmail()))
+                .initials(UserInitialsGenerator.generate(signUpForm.getName()))
                 .email(signUpForm.getEmail())
                 .hashPassword(passwordEncoder.encode(signUpForm.getPassword()))
                 .role(role)

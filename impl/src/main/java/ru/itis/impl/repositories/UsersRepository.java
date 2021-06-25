@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import ru.itis.impl.entities.User;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -27,8 +28,8 @@ public interface UsersRepository extends JpaRepository<User, Long> {
                           @Param("email") String email,
                           @Param("vkId") Long vkId);
 
-    //Optional<User> getByIdOrVkId(Long id, Long vkId);
-
     Optional<User> getById(Long id);
+
+    List<User> getAllByEmailContaining(String email);
 
 }

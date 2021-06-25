@@ -88,20 +88,22 @@
 
         <#if card.checkLists?size != 0>
           <#list card.checkLists as checkList>
-            <div class="card__attachments--title">
+            <div id="card__attachments--title#${checkList.id}" class="card__attachments--title">
               <svg class="symbol__attachments">
                 <use xlink:href="#checkList"></use>
               </svg>
               <span class="card__attachments--text">${checkList.title}</span>
-              <button class="card__about--btn">Удалить</button>
+              <button onclick="removeChecklist(${checkList.id})" class="card__about--btn">Удалить</button>
             </div>
 
-            <div class="card__about">
+            <div id="checklistTasks#${checkList.id}" class="card__about">
               <div id="card__check--items#${checkList.id}" class="card__check--items">
                 <#list checkList.checkListTasks as task>
-                  <div class="card__check--item">
-                    <input id="task#${task.id}" onclick="changeTaskStatus(${task.id})" class="card__check--input" type="checkbox" <#if task.done == true>checked</#if>>
+                  <div id="checklistTask#${task.id}" class="card__check--item">
+                    <input id="task#${task.id}" onclick="changeTaskStatus(${task.id})" class="card__check--input" type="checkbox" <#if task.done> checked </#if>>
+<#--                    <#if task.done == true>checked</#if>-->
                     <label  for="task#${task.id}" class="card__check--label">${task.title}</label>
+                    <button onclick="removeChecklistTask(${task.id})" class="card__about--btn">Удалить</button>
                   </div>
                 </#list>
 
@@ -134,7 +136,7 @@
               <#if user.avatar??>
                 <img src="${user.avatar}" alt="">
               <#else>
-                ${initials}
+                ${user.initials}
               </#if>
             </div>
             <div class="card__chat--comment">
@@ -149,7 +151,7 @@
           </div>
           <div id="card__comments" class="card__comments">
             <#list card.comments as comment>
-              <div class="card__comment">
+              <div id="card__comment#${comment.id}" class="card__comment">
                 <div class="card__comment--descr">
                   <div class="card__chat--avatar card__comment--avatar">
                     <#if comment.author.avatar??>
@@ -163,12 +165,12 @@
                     <span class="card__comment--date">${comment.createdAt}</span>
                   </div>
                 </div>
-                <div class="card__comment--text">
-                  ${comment.text}
-                </div>
-                <div class="card__comment--action">
-                  <a href="#" class="card__comment--link notext-decoration">Изменить</a>
-                  <a href="#" class="card__comment--link notext-decoration">Удалить</a>
+                <input id="comment-input#${comment.id}" disabled value="${comment.text}" class="card__comment--text">
+                <div id="comment-action#${comment.id}" class="card__comment--action">
+                  <#if user.id == comment.author.id>
+                    <a href="#" onclick="changeComment(${comment.id})" class="card__comment--link notext-decoration">Изменить</a>
+                    <a href="#" onclick="deleteComment(${comment.id})" class="card__comment--link notext-decoration">Удалить</a>
+                  </#if>
                 </div>
               </div>
             </#list>
@@ -261,19 +263,11 @@
 
       let text = document.getElementById("add-comment-textarea").value
 
-      <#--let vkId = null-->
-      <#--<#if user.vkId ??>-->
-      <#--  vkId = `${user.vkId}`.replaceAll(/\s+/g, '')-->
-      <#--</#if>-->
-
       let body = {
         'authorId': `${user.id}`.replaceAll(/\s+/g, ''),
-        // 'authorVkId': vkId,
         'text': text,
         'cardId': `${card.id}`
       }
-
-      console.log(typeof JSON.stringify(body))
 
       let response = await fetch('/cards/add_comment',
               {
@@ -288,38 +282,38 @@
       if (response.ok) {
 
         let result = await response.json()
+        let commentId = await result.id
         let createdAt = await result.date
-
-        let authorLogo = null
-        <#if user.avatar ??>
-          authorLogo = `${user.avatar}`
-        <#else>
-          authorLogo = ${user.initials}
-        </#if>
-
         let authorName = `${user.name}`
 
         let comment = document.createElement("div")
-        comment.innerHTML = `<div class="card__comment">
+
+        let html = `<div id="card__comment#` + commentId + `" class="card__comment">
                 <div class="card__comment--descr">
-                  <div class="card__chat--avatar card__comment--avatar">
+                  <div class="card__chat--avatar card__comment--avatar">`
 
-                      <img src="` + authorLogo + `" alt="">
+        <#if user.avatar??>
+          let userAvatar = `${user.avatar}`
+            html += `<img src="` + userAvatar + `" alt="">`
+        <#else>
+          let initials = `${user.initials}`
+          html += initials
+        </#if>
 
-                  </div>
+        html += `</div>
                   <div class="card__comment--info">
                     <span class="card__comment--username">` + authorName + `</span>
                     <span class="card__comment--date">` + createdAt + `</span>
                   </div>
                 </div>
-                <div class="card__comment--text">` +
-                text +
-                `</div>
-                <div class="card__comment--action">
-                  <a href="#" class="card__comment--link notext-decoration">Изменить</a>
-                  <a href="#" class="card__comment--link notext-decoration">Удалить</a>
+                <input id="comment-input#` + commentId + `" value="` + text + `" disabled class="card__comment--text">
+                <div id="comment-action#` + commentId + `" class="card__comment--action">
+                  <a href="#" onclick="changeComment(` + commentId + `)" class="card__comment--link notext-decoration">Изменить</a>
+                  <a href="#" onclick="deleteComment(` + commentId + `)" class="card__comment--link notext-decoration">Удалить</a>
                 </div>
               </div>`
+
+        comment.innerHTML = html
 
         let parent = document.getElementById("card__comments")
         parent.appendChild(comment)
@@ -368,16 +362,16 @@
         let parent = commentsBlock.parentNode
 
         let newCheckList = document.createElement("div")
-        newCheckList.innerHTML = `<div class="card__attachments--title">
+        newCheckList.innerHTML = `<div id="card__attachments--title#` + checkListId + `" class="card__attachments--title">
               <svg class="symbol__attachments">
                 <use xlink:href="#checkList"></use>
               </svg>
               <span class="card__attachments--text">` + inputText + `</span>
-              <button class="card__about--btn">Удалить</button>
+              <button onclick="removeChecklist(` + checkListId + `)" class="card__about--btn">Удалить</button>
             </div>
-            <div class="card__about">
+            <div id="checklistTasks#` + checkListId + `" class="card__about">
               <div id="card__check--items#` + checkListId + `" class="card__check--items#">
-                <button id="openCheckListTaskAddBtn#` + checkListId + `" onclick="openCheckListTaskAdd(` + checkListId + `)"class="card__check--add">
+                <button id="openCheckListTaskAddBtn#` + checkListId + `" onclick="openCheckListTaskAdd(` + checkListId + `)" class="card__check--add">
                       Добавить элемент
                 </button>
               </div>
@@ -440,9 +434,10 @@
         console.log(parent.innerHTML)
 
         let newTask = document.createElement("div")
-        newTask.innerHTML = `<div class="card__check--item">
+        newTask.innerHTML = `<div id="checklistTask#` + taskId + `" class="card__check--item">
                     <input id="task#` + taskId + `" class="card__check--input" type="checkbox" onclick="changeTaskStatus(` + taskId + `)">
                     <label for="task#` + taskId + `" class="card__check--label">` + checkListTitle + `</label>
+                    <button onclick="removeChecklistTask(` + taskId + `)" class="card__about--btn">Удалить</button>
                   </div>`
 
         parent.appendChild(newTask)
@@ -475,6 +470,78 @@
                 body: JSON.stringify(body)
               }
       )
+    }
+
+    async function removeChecklist(id) {
+
+      document.getElementById('card__attachments--title#' + id).remove()
+      document.getElementById('checklistTasks#' + id).remove()
+
+      await fetch("/cards/remove_checklist/" + id, {
+        method: 'DELETE'
+      })
+
+    }
+
+    async function deleteComment(id) {
+
+      document.getElementById('card__comment#' + id).remove()
+
+      await fetch("/cards/remove_comment/" + id, {
+        method: 'DELETE'
+      })
+    }
+
+    function changeComment(id) {
+
+      let input = document.getElementById('comment-input#' + id)
+      input.disabled = false
+
+      let commentActions = document.getElementById('comment-action#' + id)
+      commentActions.innerHTML = ''
+
+      let saveButton = document.createElement('div')
+      saveButton.innerHTML = `<button id="change-comment-btn#` + id + `" type="button" onclick="commitCommentChange(` + id + `)" class="card__about--save">Сохранить</button>`
+      commentActions.appendChild(saveButton)
+
+    }
+
+    async function commitCommentChange(id) {
+
+      let input = document.getElementById('comment-input#' + id)
+      input.disabled = true
+
+      document.getElementById("change-comment-btn#" + id).remove()
+
+      let commentActionsBlock = document.getElementById("comment-action#" + id)
+      commentActionsBlock.innerHTML = `<a href="#" onclick="changeComment(` + id + `)" class="card__comment--link notext-decoration">Изменить</a>
+                    <a href="#" onclick="deleteComment(` + id + `)" class="card__comment--link notext-decoration">Удалить</a>`
+
+      let body = {
+        'id': id,
+        'text': input.value
+      }
+
+      await fetch('/cards/change_comment',
+              {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(body)
+              })
+    }
+
+    async function removeChecklistTask(id) {
+        console.log(document.getElementById("checklistTask#" + id))
+        document.getElementById("checklistTask#" + id).remove()
+        await fetch("/cards/remove_task/" + id,
+                {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                  }
+        })
     }
 
 </script>

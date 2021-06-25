@@ -48,10 +48,6 @@ public class CardsController {
         model.addAttribute("card", cardDTO);
         model.addAttribute("user", user);
 
-        if (user.getAvatar() == null) {
-            model.addAttribute("initials", UserInitialsGenerator.generate(user.getName()));
-        }
-
         return "card_content";
     }
 
@@ -68,13 +64,8 @@ public class CardsController {
     @PostMapping(value = "add_comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommentAdditionReturnDTO> addComment(@RequestBody CommentAdditionDTO additionDTO) {
 
-        System.out.println(additionDTO);
-
-        Date createdAt = commentsService.saveComment(additionDTO);
-        CommentAdditionReturnDTO commentAdditionReturnDTO =
-                new CommentAdditionReturnDTO(createdAt);
-
-        return ResponseEntity.ok(commentAdditionReturnDTO);
+        CommentAdditionReturnDTO returnDTO = commentsService.saveComment(additionDTO);
+        return ResponseEntity.ok(returnDTO);
 
     }
 
@@ -100,11 +91,32 @@ public class CardsController {
     }
 
     @PatchMapping("change_task_status")
-    public ResponseEntity<?>addCheckListTask(@RequestBody ChangeTaskStatusDTO changeTaskStatusDTO) {
+    public ResponseEntity<?> addCheckListTask(@RequestBody ChangeTaskStatusDTO changeTaskStatusDTO) {
 
         checkListsService.changeTaskStatus(changeTaskStatusDTO);
         return ResponseEntity.ok().build();
 
+    }
+
+    @DeleteMapping("remove_checklist/{id}")
+    public void removeChecklist(@PathVariable("id") Long id) {
+        System.out.println("hello");
+        checkListsService.deleteById(id);
+    }
+
+    @DeleteMapping("remove_comment/{id}")
+    public void removeComment(@PathVariable("id") Long id) {
+        commentsService.deleteById(id);
+    }
+
+    @PatchMapping("change_comment")
+    public void changeComment(@RequestBody CommentChangeDTO changeDTO) {
+        commentsService.changeComment(changeDTO);
+    }
+
+    @DeleteMapping("remove_task/{id}")
+    public void removeTask(@PathVariable("id") Long id) {
+        checkListsService.deleteTaskById(id);
     }
 
 }

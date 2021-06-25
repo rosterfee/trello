@@ -1,8 +1,10 @@
 package ru.itis.api.dtos.web;
 
 import lombok.*;
+import ru.itis.api.enums.BoardType;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,9 @@ public class BoardDTO {
     private String name;
 
     private UserDTO creator;
-    private List<ColumnDTO> columns;
-    private List<UserDTO> participants;
+    private Set<ColumnDTO> columns;
+    private Set<UserDTO> participants;
+
+    private BoardType boardType;
 
 }

@@ -1,11 +1,13 @@
 package ru.itis.api.dtos.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import ru.itis.api.enums.AccountStatus;
 import ru.itis.api.enums.Role;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -27,18 +29,22 @@ public class UserDTO implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<BoardDTO> createdBoards;
+    @JsonIgnore
+    private Set<BoardDTO> createdBoards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<CommentDTO> comments;
+    @JsonIgnore
+    private Set<CommentDTO> comments;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<BoardDTO> boards;
+    @JsonIgnore
+    private Set<BoardDTO> boards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<CardDTO> cards;
+    @JsonIgnore
+    private Set<CardDTO> cards;
 
 }

@@ -16,4 +16,6 @@ public interface BoardsService {
 
     void deleteById(Long id);
 
+    void addBoardParticipant(BoardDTO board, UserDTO user);
+
 }

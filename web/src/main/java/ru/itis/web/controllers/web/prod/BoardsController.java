@@ -10,11 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itis.api.dtos.web.*;
+import ru.itis.api.exceptions.ResourceNotFoundException;
 import ru.itis.api.services.BoardsService;
 import ru.itis.api.services.CardsService;
 import ru.itis.api.services.ColumnsService;
+import ru.itis.api.services.UsersService;
 import ru.itis.impl.utils.UserInitialsGenerator;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -30,6 +33,9 @@ public class BoardsController {
     @Autowired
     private CardsService cardsService;
 
+    @Autowired
+    private UsersService usersService;
+
     @GetMapping("{board_name}")
     public String getBoardPage(Model model,
                                @PathVariable("board_name") String boardName,
@@ -37,14 +43,18 @@ public class BoardsController {
 
         Optional<BoardDTO> optionalBoardDTO = boardsService.getByName(boardName);
         if (optionalBoardDTO.isPresent()) {
-            model.addAttribute("board", optionalBoardDTO.get());
+
+            BoardDTO board = optionalBoardDTO.get();
+            boardsService.addBoardParticipant(board, user);
+
+            model.addAttribute("board", board);
+            model.addAttribute("user", user);
+
+            return "board";
         }
         else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "board not found");
+            throw new ResourceNotFoundException("Board not found");
         }
-        model.addAttribute("user", user);
-        model.addAttribute("initials", UserInitialsGenerator.generate(user.getName()));
-        return "board";
     }
 
     @ResponseBody
@@ -77,6 +87,15 @@ public class BoardsController {
         ColumnCreatingReturnDTO returnDto = new ColumnCreatingReturnDTO(id);
 
         return ResponseEntity.ok(returnDto);
+    }
+
+    @ResponseBody
+    @GetMapping("get_users_to_inv/{email}")
+    public ResponseEntity<List<UserDTO>> getUsersToInvite(@PathVariable("email") String email) {
+
+        List<UserDTO> users = usersService.getAllByEmailContaining(email);
+        return ResponseEntity.ok(users);
+
     }
 
 }

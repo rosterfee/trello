@@ -13,6 +13,7 @@ import java.util.Date;
 @Data
 public class CommentAdditionReturnDTO {
 
+    private Long id;
     private Date date;
 
 }

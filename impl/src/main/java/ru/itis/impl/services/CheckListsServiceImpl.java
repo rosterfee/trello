@@ -1,4 +1,4 @@
-package ru.itis.impl.services.prod;
+package ru.itis.impl.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,6 +87,11 @@ public class CheckListsServiceImpl implements CheckListsService {
     @Override
     public void deleteTaskById(Long id) {
         checkListTasksRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        checkListsRepository.deleteById(id);
     }
 
 }

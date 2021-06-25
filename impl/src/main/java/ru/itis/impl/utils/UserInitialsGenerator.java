@@ -1,7 +1,5 @@
 package ru.itis.impl.utils;
 
-import org.springframework.stereotype.Component;
-
 public class UserInitialsGenerator {
 
     public static String generate(String name) {

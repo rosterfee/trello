@@ -1,9 +1,16 @@
+<#import "spring.ftl" as spring/>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
@@ -35,13 +42,15 @@
             Trello
         </div>
         <div class="main__header--left">
-<#--            <#if userDTO.role == 'ADMIN'>-->
                 <button class="main__header--create">
                     Создать доску
                 </button>
-<#--            </#if>-->
             <button class="main__header--username">
-                ${initials}
+                <#if user.avatar??>
+                    <img src="${user.avatar}" alt="">
+                <#else>
+                    ${user.initials}
+                </#if>
             </button>
         </div>
     </header>
@@ -72,7 +81,7 @@
                     <span class="content__group--text">Мои доски</span>
                 </div>
                 <div class="content__group--cards">
-                    <#list userDTO.boards as board>
+                    <#list user.boards as board>
                         <a href="/boards/${board.name}" class="content__group--card notext-decoration">
                             ${board.name}
                         </a>
@@ -111,15 +120,15 @@
     </header>
     <div class="menu__user">
         <button class="main__header--username menu__user--avatar">
-            <#if userDTO.avatar??>
-                <img src="${userDTO.avatar}" alt="">
+            <#if user.avatar??>
+                <img src="${user.avatar}" alt="">
             <#else>
-                ${initials}
+                ${user.initials}
             </#if>
         </button>
         <div class="menu__user--info">
-            <div class="menu__user-name">${userDTO.name}</div>
-            <div class="menu__user-email">${userDTO.email}</div>
+            <div class="menu__user-name">${user.name}</div>
+            <div class="menu__user-email">${user.email}</div>
         </div>
     </div>
     <ul class="menu__user--ul">
@@ -154,12 +163,15 @@
             <use xlink:href="#close"></use>
         </svg>
         <div class="team__modal--info">
+            <@spring.bind "boardCreatingForm"/>
             <form class="team__modal--form" action="/home/create_board" method="POST">
                 <span class="team__modal--title">Создайте доску</span>
                 <span class="team__modal--text">Повысьте удобство: создайте доску для комфортной работы.</span>
                 <div class="modal__group">
                     <label for="name_board" class="modal__team--label">Название доски</label>
-                    <input type="text" name="name" id="name_board" class="modal__team--input" placeholder="Введите название доски">
+<#--                    <input type="text" name="name" id="name_board" class="modal__team--input" placeholder="Введите название доски">-->
+                    <@spring.formInput "boardCreatingForm.name" "placeholder='Введите название доски'"/>
+                    <@spring.showErrors separator="<br>" classOrStyle="error"/>
                     <div class="modal__team-undertext">Укажите название доски.</div>
                     <#if errors??>
                         <#list errors as error>
@@ -170,13 +182,14 @@
                     </#if>
                 </div>
 
-<#--                <div class="modal__group">-->
-<#--                    <label for="name_team" class="modal__team--label">Выберите команду</label>-->
-<#--                    <select name="name_team" class="modal__team--input" id="name_board-team">-->
-<#--                        <option value="Выберите команду">Выберите команду</option>-->
-<#--                        <option value="Best coders">Best coders</option>-->
+                <div class="modal__group">
+                    <label for="name_team" class="modal__team--label">Выберите тип доски</label>
+                    <@spring.formSingleSelect path="boardCreatingForm.type" options=options />
+<#--                    <select name="board_type" class="modal__team--input" id="name_board-team">-->
+<#--                        <option value="private">Приватная (доступна только по приглашению)</option>-->
+<#--                        <option value="public">Публичная (доступна всем пользователям в интернете)</option>-->
 <#--                    </select>-->
-<#--                </div>-->
+                </div>
 
                 <button type="submit" class="modal__team--btn">Создать доску</button>
             </form>

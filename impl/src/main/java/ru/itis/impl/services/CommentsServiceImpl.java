@@ -1,9 +1,11 @@
-package ru.itis.impl.services.prod;
+package ru.itis.impl.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.itis.api.dtos.web.CommentAdditionDTO;
+import ru.itis.api.dtos.web.CommentAdditionReturnDTO;
+import ru.itis.api.dtos.web.CommentChangeDTO;
 import ru.itis.api.exceptions.ResourceNotFoundException;
 import ru.itis.api.services.CommentsService;
 import ru.itis.impl.entities.Card;
@@ -32,15 +34,10 @@ public class CommentsServiceImpl implements CommentsService {
     private UsersRepository usersRepository;
 
     @Override
-    public Date saveComment(CommentAdditionDTO commentAdditionDTO) {
+    public CommentAdditionReturnDTO saveComment(CommentAdditionDTO commentAdditionDTO) {
 
         Optional<Card> optionalCard = cardsRepository.findById(
                 Long.parseLong(commentAdditionDTO.getCardId()));
-
-//        Optional<User> optionalUser = usersRepository.getByIdOrVkId(
-//                Long.parseLong(commentAdditionDTO.getAuthorId()),
-//                Long.parseLong(commentAdditionDTO.getAuthorVkId())
-//        );
 
         Optional<User> optionalUser = usersRepository.getById(
                 Long.valueOf(commentAdditionDTO.getAuthorId()));
@@ -54,11 +51,28 @@ public class CommentsServiceImpl implements CommentsService {
                     .build();
             commentsRepository.save(comment);
 
-            return new Date();
+            return CommentAdditionReturnDTO.builder()
+                    .id(comment.getId())
+                    .date(comment.getCreatedAt())
+                        .build();
         }
         else {
             throw new ResourceNotFoundException("Card not found");
         }
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        commentsRepository.deleteById(id);
+    }
+
+    @Override
+    public void changeComment(CommentChangeDTO commentChangeDTO) {
+
+        String text = commentChangeDTO.getText();
+        Long id = commentChangeDTO.getId();
+
+        commentsRepository.changeComment(text, id);
     }
 
 }

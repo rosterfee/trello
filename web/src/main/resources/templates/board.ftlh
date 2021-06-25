@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
 </head>
 <body onload="connect()">
 
@@ -41,9 +42,9 @@
         <div class="main__header--left">
             <button class="main__header--username">
                 <#if user.avatar??>
-                    <img src="${user.avatar}" alt="${initials}">
-                    <#else>
-                    ${initials}
+                    <img src="${user.avatar}" alt="${user.initials}">
+                <#else>
+                    ${user.initials}
                 </#if>
             </button>
         </div>
@@ -61,9 +62,9 @@
                     <div class="header__board--member-block admin">
                         <button class="board__avatar">
                             <#if user.avatar??>
-                                <img src="${user.avatar}" alt="${initials}">
+                                <img src="${user.avatar}" alt="${user.initials}">
                             <#else>
-                                ${initials}
+                                ${user.initials}
                             </#if>
                         </button>
                         <span class="admin__symbol"></span>
@@ -74,7 +75,7 @@
                 </div>
 
                 <div class="vertical__line"></div>
-                <div class="header__board-team" id="btnInvitation">Пригласить</div>
+                <div onclick="getUsersToInvite()" class="header__board-team" id="btnInvitation">Пригласить</div>
             </div>
             <div class="header__board--left">
                 <button class="header__board-team header__board--menu" id="archiveBtn">Архив</button>
@@ -103,17 +104,19 @@
                         </#list>
                     </div>
                     <div class="card__list--footer notext-decoration">
-<#--                        <a href="#" class="notext-decoration btn__add--card">-->
-<#--                            <svg class="symbol__plus">-->
-<#--                                <use xlink:href="#plus"></use>-->
-<#--                            </svg>-->
-<#--                            <div class="notext-decoration add__card">Добавить карточку</div>-->
-<#--                        </a>-->
+                        <#--                        <a href="#" class="notext-decoration btn__add--card">-->
+                        <#--                            <svg class="symbol__plus">-->
+                        <#--                                <use xlink:href="#plus"></use>-->
+                        <#--                            </svg>-->
+                        <#--                            <div class="notext-decoration add__card">Добавить карточку</div>-->
+                        <#--                        </a>-->
                         <div class="card__textarea">
                             <textarea class="card__add--textarea" name="card__text" id="card__text" cols="30" rows="10"
-                              placeholder="Введите название карточки"></textarea>
+                                      placeholder="Введите название карточки"></textarea>
                             <div class="action__card">
-                                <button id="add_card_button${column.id}" onclick="addCardFunc(${column.id})" class="card__add--btn">Добавить карточку</button>
+                                <button id="add_card_button${column.id}" onclick="addCardFunc(${column.id})"
+                                        class="card__add--btn">Добавить карточку
+                                </button>
                                 <svg class="symbol__close--cardAdd">
                                     <use xlink:href="#close"></use>
                                 </svg>
@@ -122,11 +125,11 @@
                     </div>
                 </div>
             </#list>
-            <div class="card-list-container--add">
+            <div class="card-list-container--add" id="add_column">
                 <button class="card__list--addList">Добавить еще одну колонку</button>
                 <div class="card__textarea">
                     <textarea class="card__add--textarea" name="card__text" id="card__text--list" cols="30" rows="10"
-                          placeholder="Введите название карточки"></textarea>
+                              placeholder="Введите название карточки"></textarea>
                     <div class="action__card">
                         <button onclick="addColumnFunc()" class="card__add--btn">Добавить колонку</button>
                         <svg class="symbol__close--cardAdd">
@@ -149,9 +152,11 @@
                                 <div class="box-footer">
                                     <form>
                                         <div class="input-group">
-                                            <input id="text-input" type="text" name="message" placeholder="Введите сообщение..." class="form-control">
+                                            <input id="text-input" type="text" name="message"
+                                                   placeholder="Введите сообщение..." class="form-control">
                                             <span class="input-group-btn">
-                                                <button onclick="sendMessage()" type="button" class="btn btn-warning btn-flat">Отправить</button>
+                                                <button onclick="sendMessage()" type="button"
+                                                        class="btn btn-warning btn-flat">Отправить</button>
                                             </span>
                                         </div>
                                     </form>
@@ -192,9 +197,9 @@
         <div class="header__board--title">
             <button class="board__avatar--popup">
                 <#if user.avatar??>
-                    <img src="${user.avatar}" alt="${initials}">
+                    <img src="${user.avatar}" alt="${user.initials}">
                 <#else>
-                    ${initials}
+                    ${user.initials}
                 </#if>
             </button>
             <div class="header__popup--info">
@@ -220,20 +225,9 @@
                 Пригласить на доску
             </div>
             <form class="popup__invitation--form">
-                <div class="popup__invitation--group">
-                    <input type="text" placeholder="Адрес электронной почты" class="popup__invitation--input">
-                    <div class="popup__invitation--searched">
-                        <a href="#" class="popup__invitation--item notext-decoration">
-                            <div class="main__header--username board__avatar">
-                                <#if user.avatar??>
-                                    <img src="${user.avatar}" alt="${initials}">
-                                <#else>
-                                    ${initials}
-                                </#if>
-                            </div>
-                            <div class="popup__invitation--email">${user.email}</div>
-                        </a>
-                    </div>
+                <div id="popup__invitation--group" class="popup__invitation--group">
+                    <input id="invite-input" type="text" placeholder="Адрес электронной почты"
+                           class="popup__invitation--input">
                 </div>
                 <button class="popup__invitation--btn">Отправить приглашение</button>
             </form>
@@ -251,9 +245,9 @@
     <div class="menu__user">
         <button class="main__header--username menu__user--avatar">
             <#if user.avatar??>
-                <img src="${user.avatar}" alt="${initials}">
+                <img src="${user.avatar}" alt="${user.initials}">
             <#else>
-                ${initials}
+                ${user.initials}
             </#if>
         </button>
         <div class="menu__user--info">
@@ -378,12 +372,12 @@
         }
 
         let response = await fetch('/boards/add_column', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(column)
-            })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(column)
+        })
 
         if (response.ok) {
 
@@ -391,12 +385,11 @@
             let column_id = result.id
 
 
-
             let parent = document.getElementById('cards')
             let newColumnBlock = document.createElement('div')
+            newColumnBlock.classList = 'card-list-container'
             newColumnBlock.innerHTML =
-                `<div class="card-list-container">
-
+                `
                     <header class="card__list--title">` + name + `</header>
 
                     <div id="cards` + column_id + `" class="card__list--cards"></div>
@@ -412,9 +405,9 @@
                             </div>
                         </div>
                     </div>
-                </div>`
+               `
             console.log(newColumnBlock)
-            parent.insertBefore(newColumnBlock, parent.lastElementChild)
+            parent.insertBefore(newColumnBlock, document.querySelector('#add_column'))
         }
     }
 
@@ -439,8 +432,7 @@
                                                 </div>`
                     if (payload.avatar != null) {
                         html += `<img class="direct-chat-img" src="` + payload.avatar + `" alt="">`
-                    }
-                    else {
+                    } else {
                         html = html + `<div>` + payload.initials + `</div>`
                     }
                     html += `<div class="direct-chat-text">` + payload.text + `</div>`
@@ -473,6 +465,53 @@
         }
 
         stompClient.send("/app/send_message", {}, JSON.stringify(message))
+    }
+
+    function getUsersToInvite() {
+        let inviteInput = document.getElementById("invite-input")
+        inviteInput.addEventListener(`input`, async function printUsersToInvite() {
+
+            let inviteList = document.getElementById("searched-list")
+            if (inviteList != null) {
+                inviteList.remove()
+            }
+
+            let email = inviteInput.value
+            let response = await fetch('/boards/get_users_to_inv/' + email)
+
+            if (response.ok) {
+                let users = await response.json()
+                let len = users.length
+                if (len > 0) {
+
+                    let parent = document.getElementById("popup__invitation--group")
+                    inviteList = document.createElement("div")
+                    inviteList.innerHTML = `<div id="searched-list" class="popup__invitation--searched"></div>`
+                    parent.appendChild(inviteList)
+
+                    let user
+                    let userInfo
+                    let html
+                    for (let i = 0; i < len; i++) {
+                        user = users[i]
+                        userInfo = document.createElement("div")
+                        html = `<a href="#" class="popup__invitation--item notext-decoration">
+                            <div class="main__header--username board__avatar">`
+                        <#if user.avatar??>
+                        html += `<img src="` + user.avatar + `" alt=""/>`
+                        <#else>
+                        html += user.initials
+                        </#if>
+                        html += `</div>`
+                        html += `<div class="popup__invitation--email">` + user.email + `</div>
+                        </a>`
+                        userInfo.innerHTML = html
+
+                        inviteList.appendChild(userInfo)
+                    }
+                }
+            }
+        })
     }
 
 </script>

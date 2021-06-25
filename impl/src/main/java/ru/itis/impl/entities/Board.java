@@ -1,11 +1,9 @@
 package ru.itis.impl.entities;
 
 import lombok.*;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import ru.itis.api.enums.BoardType;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -43,5 +41,8 @@ public class Board {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<User> participants;
+
+    @Enumerated(value = EnumType.STRING)
+    private BoardType boardType;
 
 }

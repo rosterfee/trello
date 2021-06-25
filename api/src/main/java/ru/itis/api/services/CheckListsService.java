@@ -14,4 +14,6 @@ public interface CheckListsService {
 
     void deleteTaskById(Long id);
 
+    void deleteById(Long id);
+
 }
