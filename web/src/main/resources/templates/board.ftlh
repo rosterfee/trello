@@ -104,12 +104,6 @@
                         </#list>
                     </div>
                     <div class="card__list--footer notext-decoration">
-                        <#--                        <a href="#" class="notext-decoration btn__add--card">-->
-                        <#--                            <svg class="symbol__plus">-->
-                        <#--                                <use xlink:href="#plus"></use>-->
-                        <#--                            </svg>-->
-                        <#--                            <div class="notext-decoration add__card">Добавить карточку</div>-->
-                        <#--                        </a>-->
                         <div class="card__textarea">
                             <textarea class="card__add--textarea" name="card__text" id="card__text" cols="30" rows="10"
                                       placeholder="Введите название карточки"></textarea>
@@ -191,7 +185,6 @@
         </div>
 
     </main>
-    <!--    <app-card-content></app-card-content>-->
 
     <div class="header__board--popup" id="popup_member">
         <div class="header__board--title">

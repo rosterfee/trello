@@ -219,10 +219,6 @@
       <button class="login__btn--input">Войти</button>
       <p class="login__p--or">Или</p>
 
-<#--      <button class="login__btn--vk">-->
-<#--        <span class="btn__vk--text"></span>Войти через Вконтакте-->
-<#--      </button>-->
-
       <a href="https://oauth.vk.com/authorize?client_id=7830386&display=page&redirect_uri=http://localhost:8080/oauth/vk&scope=email&response_type=code&v=5.130">Войти через Вконтакте</a>
 
       <div class="line__login"></div>

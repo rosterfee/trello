@@ -48,25 +48,21 @@ public class User implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    //@JsonIgnore
     @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
     private Set<Board> createdBoards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    //@JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Comment> comments;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    //@JsonIgnore
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     private Set<Board> boards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    //@JsonIgnore
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     private Set<Card> cards;
 

@@ -25,9 +25,6 @@ public class BoardsServiceImpl implements BoardsService {
     private BoardsRepository boardsRepository;
 
     @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     @Override

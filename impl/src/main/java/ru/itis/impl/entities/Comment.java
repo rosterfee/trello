@@ -17,24 +17,17 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
+
     private long id;
 
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
     private String text;
 
     @CreationTimestamp
     @Temporal(value = TemporalType.TIMESTAMP)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
     private Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
     private User author;
 
     @ManyToOne

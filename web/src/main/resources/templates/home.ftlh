@@ -91,25 +91,10 @@
                     </a>
                 </div>
             </div>
-<#--            <div class="main__content--group">-->
-<#--                <div class="content__group--title">-->
-<#--                    <span class="content__group--text">Название пространства</span>-->
-<#--                </div>-->
-<#--                <div class="content__group--cards">-->
-<#--                    <a href="#" class="content__group--card notext-decoration">-->
-<#--                        Best coders table-->
-<#--                    </a>-->
-<#--                    <a href="#" class="content__group--card notext-decoration content__group_create__card">-->
-<#--                        Создать доску-->
-<#--                    </a>-->
-
-<#--                </div>-->
-<#--            </div>-->
         </div>
     </section>
     <form action="33666" id="wer"></form>
 </section>
-<!--<app-create-board></app-create-board>-->
 
 <section class="menu__section">
     <header class="menu__header">
@@ -169,7 +154,6 @@
                 <span class="team__modal--text">Повысьте удобство: создайте доску для комфортной работы.</span>
                 <div class="modal__group">
                     <label for="name_board" class="modal__team--label">Название доски</label>
-<#--                    <input type="text" name="name" id="name_board" class="modal__team--input" placeholder="Введите название доски">-->
                     <@spring.formInput path="boardCreatingForm.name" attributes="placeholder='Введите название доски' class='modal__team--input'"/>
                     <@spring.showErrors separator="<br>" classOrStyle="error"/>
                     <div class="modal__team-undertext">Укажите название доски.</div>
@@ -185,10 +169,6 @@
                 <div class="modal__group">
                     <label for="name_team" class="modal__team--label">Выберите тип доски</label>
                     <@spring.formSingleSelect path="boardCreatingForm.type" attributes="class='modal__team--input'" options=options />
-<#--                    <select name="board_type" class="modal__team--input" id="name_board-team">-->
-<#--                        <option value="private">Приватная (доступна только по приглашению)</option>-->
-<#--                        <option value="public">Публичная (доступна всем пользователям в интернете)</option>-->
-<#--                    </select>-->
                 </div>
 
                 <button type="submit" class="modal__team--btn">Создать доску</button>
