@@ -21,9 +21,6 @@ public class ConfirmMailGenerator {
     @Value("${server.url}")
     private String serverAddress;
 
-    @Value("${server.port}")
-    private String serverPort;
-
     public String generateConfirmMail(String confirmCode, String name) {
 
         Template template;
