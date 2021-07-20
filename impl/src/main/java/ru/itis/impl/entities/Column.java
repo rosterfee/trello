@@ -18,7 +18,6 @@ public class Column {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private long id;
 
     private String name;
