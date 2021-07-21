@@ -33,6 +33,7 @@ public class HomeController {
     public String boardsPage(@AuthenticationPrincipal UserDTO user, Model model) {
 
         user = usersService.getById(user.getId());
+        System.out.println("user: " + user);
         model.addAttribute("user", user);
 
         model.addAttribute("boardCreatingForm", new BoardCreatingForm());
