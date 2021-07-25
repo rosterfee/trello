@@ -14,16 +14,9 @@ public class Deadline {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private long id;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private Date date;
-
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private boolean done;
 
     @OneToOne

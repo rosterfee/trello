@@ -14,6 +14,6 @@ import java.util.Date;
 public class CommentAdditionReturnDTO {
 
     private Long id;
-    private Date date;
+    private long date;
 
 }

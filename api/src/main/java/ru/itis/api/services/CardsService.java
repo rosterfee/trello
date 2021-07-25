@@ -13,4 +13,8 @@ public interface CardsService {
 
     void saveDescription(String text, Long cardId) throws ResourceNotFoundException;
 
+    void delete(Long id);
+
+    void moveCard(Long columnId, Long cardId);
+
 }

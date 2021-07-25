@@ -2,6 +2,7 @@ package ru.itis.impl.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,26 +12,18 @@ import java.util.Date;
 @Data
 @Builder
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private long id;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private String title;
-
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private String content;
 
     @CreatedDate
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Date loadedAt;
+    private long loadedAt;
 
     @ManyToOne
     @JoinColumn(name = "card_id")

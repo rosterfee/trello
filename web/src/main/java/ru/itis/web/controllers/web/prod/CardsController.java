@@ -119,4 +119,15 @@ public class CardsController {
         checkListsService.deleteTaskById(id);
     }
 
+    @DeleteMapping("delete/{id}")
+    public void deleteCard(@PathVariable("id") Long id) {
+        cardsService.delete(id);
+    }
+
+    @PatchMapping("move/{cardId}/{columnId}")
+    public void moveCard(@PathVariable("cardId") Long cardId,
+                         @PathVariable("columnId") Long columnId) {
+        cardsService.moveCard(columnId, cardId);
+    }
+
 }

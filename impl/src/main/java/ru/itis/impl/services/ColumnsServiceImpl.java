@@ -35,4 +35,9 @@ public class ColumnsServiceImpl implements ColumnsService {
         Column newColumn = columnsRepository.getByName(name);
         return newColumn.getId();
     }
+
+    @Override
+    public void deleteById(Long id) {
+        columnsRepository.deleteById(id);
+    }
 }

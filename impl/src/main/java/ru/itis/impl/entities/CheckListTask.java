@@ -13,16 +13,9 @@ public class CheckListTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private long id;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private String title;
-
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private boolean done;
 
     @ManyToOne

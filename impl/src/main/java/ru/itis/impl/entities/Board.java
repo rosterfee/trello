@@ -4,6 +4,8 @@ import lombok.*;
 import ru.itis.api.enums.BoardType;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -15,24 +17,16 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private long id;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private String name;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private User creator;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.EAGER)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Set<Column> columns;
+    private List<Column> columns;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "board_participant",

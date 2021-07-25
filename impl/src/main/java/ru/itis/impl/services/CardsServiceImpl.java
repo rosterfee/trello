@@ -33,13 +33,14 @@ public class CardsServiceImpl implements CardsService {
 
         Optional<Column> optionalColumn = columnsRepository.findById(columnId);
         if (optionalColumn.isPresent()) {
+
             Card card = Card.builder()
                     .title(title)
                     .column(optionalColumn.get())
                         .build();
             cardsRepository.save(card);
-            id = cardsRepository.getIdByTitle(title);
 
+            id = card.getId();
         }
         return Optional.ofNullable(id);
     }
@@ -70,6 +71,16 @@ public class CardsServiceImpl implements CardsService {
         else {
             throw new ResourceNotFoundException("Card id is wrong");
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        cardsRepository.deleteById(id);
+    }
+
+    @Override
+    public void moveCard(Long columnId, Long cardId) {
+        cardsRepository.setCardNewColumnId(columnId, cardId);
     }
 
 }

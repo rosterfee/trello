@@ -4,4 +4,6 @@ public interface ColumnsService {
 
     Long addColumn(String name, Long boardId);
 
+    void deleteById(Long id);
+
 }

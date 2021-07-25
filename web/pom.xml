@@ -14,7 +14,7 @@
     <groupId>ru.itis</groupId>
     <artifactId>web</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>web</name>
     <description>web module</description>
 

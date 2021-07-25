@@ -13,18 +13,17 @@ import java.util.Date;
 @Builder
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private long id;
 
     private String text;
 
-    @CreationTimestamp
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date createdAt;
+   @CreatedDate
+    private long createdAt;
 
     @ManyToOne
     @JoinColumn(name = "author_id")

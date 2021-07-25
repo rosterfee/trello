@@ -27,13 +27,9 @@ public class User implements Serializable {
     private Long id;
 
     private String name;
-
     private String initials;
-
     private String email;
-
     private String hashPassword;
-
     private String confirmCode;
 
     @Enumerated(value = EnumType.STRING)
@@ -43,27 +39,30 @@ public class User implements Serializable {
     private AccountStatus accountStatus;
 
     private String avatar;
-
     private Long vkId;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
+    @Transient
     private Set<Board> createdBoards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
+    @Transient
     private Set<Comment> comments;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
+    @Transient
     private Set<Board> boards;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
+    @Transient
     private Set<Card> cards;
 
 }

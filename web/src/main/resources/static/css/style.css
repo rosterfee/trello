@@ -1410,6 +1410,16 @@ p {
     padding: .8rem .8rem 0 .8rem
 }
 
+.card-zone {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.card__zone-a{
+    width: 100%;
+}
+
 .drag_start {
     background: #fff;
     width: 100%;
@@ -1448,8 +1458,7 @@ p {
     border: 0;
     outline: 0;
     padding: 10px;
-    max-height: 80px;
-    height: 80px;
+    margin-bottom: 5px;
     resize: none
 }
 
@@ -1481,7 +1490,18 @@ p {
     width: 12px;
     height: 12px;
     fill: #091e42;
-    cursor: pointer
+    cursor: pointer;
+    float: right;
+}
+
+.symbol__close--cardAdd-- {
+    width: 9px;
+    height: 9px;
+    fill: #091e42;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 7px;
 }
 
 .card__textarea {

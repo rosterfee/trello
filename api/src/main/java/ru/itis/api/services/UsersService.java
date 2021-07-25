@@ -1,5 +1,6 @@
 package ru.itis.api.services;
 
+import ru.itis.api.dtos.web.BoardDTO;
 import ru.itis.api.dtos.web.UserDTO;
 
 import java.util.List;

@@ -4,6 +4,7 @@ import ru.itis.api.dtos.web.BoardCreatingForm;
 import ru.itis.api.dtos.web.BoardDTO;
 import ru.itis.api.dtos.web.UserDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BoardsService {
@@ -17,5 +18,7 @@ public interface BoardsService {
     void deleteById(Long id);
 
     void addBoardParticipant(BoardDTO board, UserDTO user);
+
+    List<BoardDTO> getUserBoards(UserDTO userDTO);
 
 }

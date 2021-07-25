@@ -17,6 +17,7 @@ import ru.itis.impl.repositories.BoardsRepository;
 import ru.itis.impl.repositories.UsersRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardsServiceImpl implements BoardsService {
@@ -72,6 +73,14 @@ public class BoardsServiceImpl implements BoardsService {
         board.getParticipants().add(user);
         Board updBoard = modelMapper.map(board, Board.class);
         boardsRepository.save(updBoard);
+    }
+
+    @Override
+    public List<BoardDTO> getUserBoards(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        List<Board> boards = boardsRepository.getUserBoards(user);
+        return boards.stream().map(board -> modelMapper.map(board, BoardDTO.class))
+                .collect(Collectors.toList());
     }
 
 }

@@ -17,8 +17,10 @@ import ru.itis.api.services.ColumnsService;
 import ru.itis.api.services.UsersService;
 import ru.itis.impl.utils.UserInitialsGenerator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 @RequestMapping("boards")
@@ -47,6 +49,7 @@ public class BoardsController {
             BoardDTO board = optionalBoardDTO.get();
             boardsService.addBoardParticipant(board, user);
 
+//            Collections.sort(board.getColumns());
             model.addAttribute("board", board);
             model.addAttribute("user", user);
 

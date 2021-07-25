@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.api.dtos.web.BoardCreatingForm;
+import ru.itis.api.dtos.web.BoardDTO;
 import ru.itis.api.dtos.web.UserDTO;
 import ru.itis.api.services.BoardsService;
 import ru.itis.api.services.UsersService;
@@ -33,8 +34,10 @@ public class HomeController {
     public String boardsPage(@AuthenticationPrincipal UserDTO user, Model model) {
 
         user = usersService.getById(user.getId());
-        System.out.println("user: " + user);
         model.addAttribute("user", user);
+
+        List<BoardDTO> userBoards = boardsService.getUserBoards(user);
+        model.addAttribute("boards", userBoards);
 
         model.addAttribute("boardCreatingForm", new BoardCreatingForm());
         model.addAttribute("options", options);

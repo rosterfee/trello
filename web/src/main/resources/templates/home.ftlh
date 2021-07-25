@@ -81,7 +81,7 @@
                     <span class="content__group--text">Мои доски</span>
                 </div>
                 <div class="content__group--cards">
-                    <#list user.boards as board>
+                    <#list boards as board>
                         <a href="/boards/${board.name}" class="content__group--card notext-decoration">
                             ${board.name}
                         </a>

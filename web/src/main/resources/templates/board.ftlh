@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>${board.name}</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
@@ -84,36 +84,41 @@
 
         <div class="lists__card" id="cards">
             <#list board.columns as column>
-                <div class="card-list-container">
+                <div id="column#${column.id}" class="card-list-container">
                     <header class="card__list--title">
                         ${column.name}
+                        <svg onclick="deleteColumn(${column.id})" class="symbol__close--cardAdd">
+                            <use xlink:href="#close"></use>
+                        </svg>
                     </header>
                     <div id="cards${column.id}" class="card__list--cards">
                         <#list column.cards as card>
-                            <a href="/cards/${card.id}">
-                                <div class="drag_start" draggable="true">
-                                    <div class="card-container">
-                                        <div class="card-body">
-                                            <p class="card_name">
-                                                ${card.title}
-                                            </p>
+                            <div id="card-zone#${card.id}" class="card-zone" draggable="true">
+                                <a class="card__zone-a" id="card#${card.id}" href="/cards/${card.id}">
+                                    <div class="drag_start">
+                                        <div class="card-container">
+                                            <div class="card-body">
+                                                <p class="card_name">
+                                                    ${card.title}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
+                                </a>
+                                <svg onclick="deleteCard(${card.id})" class="symbol__close--cardAdd--">
+                                    <use xlink:href="#close"></use>
+                                </svg>
+                            </div>
                         </#list>
                     </div>
                     <div class="card__list--footer notext-decoration">
                         <div class="card__textarea">
-                            <textarea class="card__add--textarea" name="card__text" id="card__text" cols="30" rows="10"
-                                      placeholder="Введите название карточки"></textarea>
+                            <input class="card__add--textarea" name="card__text" id="card__text"
+                                      placeholder="Введите название карточки">
                             <div class="action__card">
                                 <button id="add_card_button${column.id}" onclick="addCardFunc(${column.id})"
                                         class="card__add--btn">Добавить карточку
                                 </button>
-                                <svg class="symbol__close--cardAdd">
-                                    <use xlink:href="#close"></use>
-                                </svg>
                             </div>
                         </div>
                     </div>
@@ -122,13 +127,10 @@
             <div class="card-list-container--add" id="add_column">
                 <button class="card__list--addList">Добавить еще одну колонку</button>
                 <div class="card__textarea">
-                    <textarea class="card__add--textarea" name="card__text" id="card__text--list" cols="30" rows="10"
-                              placeholder="Введите название колонки"></textarea>
+                    <input class="card__add--textarea" name="card__text" id="card__text--list"
+                              placeholder="Введите название колонки">
                     <div class="action__card">
                         <button onclick="addColumnFunc()" class="card__add--btn">Добавить колонку</button>
-                        <svg class="symbol__close--cardAdd">
-                            <use xlink:href="#close"></use>
-                        </svg>
                     </div>
                 </div>
             </div>
@@ -257,6 +259,9 @@
 <script src="https://www.jsviews.com/download/jsrender.min.js"></script>
 
 <script>
+
+    window.onload = dragAndDrop
+
     const menu = $('.menu__section');
     const btnMenu = $('.main__header--username');
     const closeBtnMenu = $('.symbol__close');
@@ -316,10 +321,12 @@
     async function addCardFunc(column_id) {
 
         let parent = document.getElementById('add_card_button' + column_id).parentNode.parentNode;
-        let textAreaValue = parent.firstElementChild.value;
+        let input = parent.firstElementChild;
+        let title = input.value
+        input.value = null
 
         let card = {
-            "title": textAreaValue,
+            "title": title,
             "columnId": column_id
         }
 
@@ -340,16 +347,27 @@
 
             let cardsHolder = document.getElementById('cards' + column_id);
             let cardBlock = document.createElement('div')
-            cardBlock.innerHTML = `<a href="/cards/` + card_id + `">
-            <div class="drag_start" draggable="true">
-                <div class="card-container">
-                    <div class="card-body">
-                        <p class="card_name">` + textAreaValue + `</p>
-                    </div>
-                </div>
-            </div>
-            </a>`
-            console.log(cardBlock)
+            cardBlock.className = 'card-zone'
+            cardBlock.id = 'card-zone#' + card_id
+            cardBlock.draggable = true
+
+            cardBlock.innerHTML = `<a class="card__zone-a" id="card#` + card_id + `" href="/cards/` + card_id + `">
+                                    <div class="drag_start">
+                                        <div class="card-container">
+                                            <div class="card-body">
+                                                <p class="card_name">
+                                                    ` + title + `
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <svg onclick="deleteCard(` + card_id + `)" class="symbol__close--cardAdd--">
+                                    <use xlink:href="#close"></use>
+                                </svg>`
+
+            cardBlock.ondragstart = drag
+
             cardsHolder.appendChild(cardBlock)
         }
 
@@ -357,7 +375,9 @@
 
     async function addColumnFunc() {
 
-        let name = document.getElementById('card__text--list').value
+        let input = document.getElementById('card__text--list')
+        let name = input.value
+        input.value = null;
 
         let column = {
             "name": name,
@@ -381,25 +401,31 @@
             let parent = document.getElementById('cards')
             let newColumnBlock = document.createElement('div')
             newColumnBlock.classList = 'card-list-container'
+            newColumnBlock.id = 'column#' + column_id
             newColumnBlock.innerHTML =
                 `
-                    <header class="card__list--title">` + name + `</header>
-
+                    <header class="card__list--title">` + name + `
+                        <svg onclick="deleteColumn(` + column_id + `)" class="symbol__close--cardAdd">
+                            <use xlink:href="#close"></use>
+                        </svg>
+                    </header>
                     <div id="cards` + column_id + `" class="card__list--cards"></div>
                     <div class="card__list--footer notext-decoration">
                         <div class="card__textarea">
-                            <textarea class="card__add--textarea" name="card__text" id="card__text" cols="30" rows="10" placeholder="Введите название карточки"></textarea>
+                            <input class="card__add--textarea" name="card__text" id="card__text"
+                                      placeholder="Введите название карточки">
                             <div class="action__card">
                                 <button id="add_card_button` + column_id + `" onclick="addCardFunc(` + column_id + `)"
                                 class="card__add--btn">Добавить карточку</button>
-                                <svg class="symbol__close--cardAdd">
-                                    <use xlink:href="#close"></use>
-                                </svg>
                             </div>
                         </div>
                     </div>
                `
-            console.log(newColumnBlock)
+
+            let cardsList = newColumnBlock.querySelector('.card__list--cards')
+            cardsList.ondragover = allowDrop
+            cardsList.ondrop = drop
+
             parent.insertBefore(newColumnBlock, document.querySelector('#add_column'))
         }
     }
@@ -505,6 +531,83 @@
                 }
             }
         })
+    }
+
+    async function deleteColumn(id) {
+        document.getElementById('column#' + id).remove()
+        await fetch('/columns/delete/' + id, {
+            method: 'DELETE'
+        })
+    }
+
+    async function deleteCard(id) {
+        document.getElementById('card#' + id).remove()
+        await fetch('/cards/delete/' + id, {
+            method: 'DELETE'
+        })
+    }
+
+    function dragAndDrop() {
+
+        const columns = document.querySelectorAll('.card__list--cards')
+        const cards = document.querySelectorAll('.card-zone')
+
+        columns.forEach(column => {
+            column.ondragover = allowDrop
+            column.ondrop = drop
+        })
+
+        cards.forEach(card => {
+            card.ondragstart = drag
+        })
+
+    }
+
+    function allowDrop(event) {
+        event.preventDefault()
+    }
+
+    async function drop(event) {
+
+        let dataTransfer = event.dataTransfer
+
+        let cardId = dataTransfer.getData('cardId')
+        let card = document.getElementById(cardId)
+
+        let oldColumnId = dataTransfer.getData('oldColumnId')
+        let oldColumn = document.getElementById(oldColumnId)
+
+        console.log('oldColumn: ' + oldColumnId)
+        oldColumn.removeChild(card)
+
+        console.log('card: ' + cardId)
+        console.log('target: ' + event.target.id)
+        await event.target.append(card)
+
+        console.log('newColumnId' + event.target.id.slice(5))
+        let newColumnId = event.target.id.slice(5)
+        cardId = cardId.slice(10)
+
+        document.getElementById('card#' + cardId).style.removeProperty('display')
+
+        console.log('/cards/move/' + cardId + '/' + newColumnId)
+        await fetch('/cards/move/' + cardId + '/' + newColumnId,
+            {
+                method: 'PATCH'
+            })
+    }
+
+    function drag(event) {
+
+        let card = event.target
+
+        setTimeout(() => {
+            card.style.display = 'none'
+        }, 0)
+
+        let dataTransfer = event.dataTransfer
+        dataTransfer.setData('cardId', card.parentNode.id)
+        dataTransfer.setData('oldColumnId', card.parentNode.parentNode.id)
     }
 
 </script>
