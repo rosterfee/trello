@@ -1,8 +1,7 @@
 package ru.itis.web.controllers.web.prod;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -11,25 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itis.api.dtos.web.*;
 import ru.itis.api.services.CardsService;
-import ru.itis.api.services.CheckListsService;
-import ru.itis.api.services.CommentsService;
-import ru.itis.impl.utils.UserInitialsGenerator;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("cards")
 public class CardsController {
 
-    @Autowired
-    private CardsService cardsService;
+    private final CardsService cardsService;
 
-    @Autowired
-    private CommentsService commentsService;
-
-    @Autowired
-    private CheckListsService checkListsService;
+    public CardsController(CardsService cardsService) {
+        this.cardsService = cardsService;
+    }
 
     @GetMapping("{card_id}")
     public String showCardContent(@PathVariable("card_id") Long cardId,
@@ -51,6 +43,24 @@ public class CardsController {
         return "card_content";
     }
 
+    @ResponseBody
+    @PostMapping(value = "add_card")
+    public ResponseEntity<CardCreatingReturnDTO> addCard(@RequestBody CardCreatingDto cardCreatingDto) throws JsonProcessingException {
+
+        Optional<Long> optionalId = cardsService.save(cardCreatingDto.getTitle(),
+                cardCreatingDto.getColumnId());
+
+        if (optionalId.isPresent()) {
+            CardCreatingReturnDTO returnDTO = new CardCreatingReturnDTO(optionalId.get());
+            return ResponseEntity.ok(returnDTO);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "column with " +
+                    "such id not found");
+        }
+
+    }
+
     @PostMapping(value = "save_description/{card_id}")
     public ResponseEntity<?> saveDescription(@RequestBody DescriptionSavingDTO savingDTO,
                                              @PathVariable("card_id") Long cardId) {
@@ -59,64 +69,6 @@ public class CardsController {
         cardsService.saveDescription(savingDTO.getText(), cardId);
 
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping(value = "add_comment", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommentAdditionReturnDTO> addComment(@RequestBody CommentAdditionDTO additionDTO) {
-
-        CommentAdditionReturnDTO returnDTO = commentsService.saveComment(additionDTO);
-        return ResponseEntity.ok(returnDTO);
-
-    }
-
-    @PostMapping(value = "add_checkList",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CheckListAddReturnDTO> addCheckList(
-            @RequestBody CheckListAdditionDTO additionDTO) {
-
-        Long id = checkListsService.saveCheckList(additionDTO);
-        CheckListAddReturnDTO returnDTO = new CheckListAddReturnDTO(id);
-        return ResponseEntity.ok(returnDTO);
-
-    }
-
-    @PostMapping("add_checkList_task")
-    public ResponseEntity<CheckListTaskAddReturnDTO> addCheckListTask(
-            @RequestBody CheckListTaskAdditionDTO additionDTO) {
-
-        Long id = checkListsService.saveTask(additionDTO);
-        CheckListTaskAddReturnDTO returnDTO = new CheckListTaskAddReturnDTO(id);
-
-        return ResponseEntity.ok(returnDTO);
-
-    }
-
-    @PatchMapping("change_task_status")
-    public ResponseEntity<?> addCheckListTask(@RequestBody ChangeTaskStatusDTO changeTaskStatusDTO) {
-
-        checkListsService.changeTaskStatus(changeTaskStatusDTO);
-        return ResponseEntity.ok().build();
-
-    }
-
-    @DeleteMapping("remove_checklist/{id}")
-    public void removeChecklist(@PathVariable("id") Long id) {
-        System.out.println("hello");
-        checkListsService.deleteById(id);
-    }
-
-    @DeleteMapping("remove_comment/{id}")
-    public void removeComment(@PathVariable("id") Long id) {
-        commentsService.deleteById(id);
-    }
-
-    @PatchMapping("change_comment")
-    public void changeComment(@RequestBody CommentChangeDTO changeDTO) {
-        commentsService.changeComment(changeDTO);
-    }
-
-    @DeleteMapping("remove_task/{id}")
-    public void removeTask(@PathVariable("id") Long id) {
-        checkListsService.deleteTaskById(id);
     }
 
     @DeleteMapping("delete/{id}")

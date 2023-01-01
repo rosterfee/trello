@@ -149,7 +149,7 @@
         </svg>
         <div class="team__modal--info">
             <@spring.bind "boardCreatingForm"/>
-            <form class="team__modal--form" action="/home/create_board" method="POST">
+            <form class="team__modal--form" action="/boards/create" method="POST">
                 <span class="team__modal--title">Создайте доску</span>
                 <span class="team__modal--text">Повысьте удобство: создайте доску для комфортной работы.</span>
                 <div class="modal__group">

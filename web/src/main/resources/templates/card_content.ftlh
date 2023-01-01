@@ -269,7 +269,7 @@
         'cardId': `${card.id}`
       }
 
-      let response = await fetch('/cards/add_comment',
+      let response = await fetch('/comments/add',
               {
                 method: 'POST',
                 headers: {
@@ -343,7 +343,7 @@
         'cardId': `${card.id}`
       }
 
-      let response = await fetch('/cards/add_checkList',
+      let response = await fetch('/checklists/add',
               {
                 method: 'POST',
                 headers: {
@@ -381,15 +381,15 @@
       }
     }
 
-      function openCheckListTaskAdd(checkListId) {
+    function openCheckListTaskAdd(checkListId) {
 
-        console.log('id: ' + checkListId)
+      console.log('id: ' + checkListId)
 
-        let button = document.getElementById("openCheckListTaskAddBtn#" + checkListId)
-        let parent = button.parentNode
+      let button = document.getElementById("openCheckListTaskAddBtn#" + checkListId)
+      let parent = button.parentNode
 
-        let checkListTaskAddZone = document.createElement("div")
-        checkListTaskAddZone.innerHTML = `<textarea id="card__check--text#` + checkListId + `" placeholder="Введите элемент" class="card__check--field" cols="30" rows="10"></textarea>
+      let checkListTaskAddZone = document.createElement("div")
+      checkListTaskAddZone.innerHTML = `<textarea id="card__check--text#` + checkListId + `" placeholder="Введите элемент" class="card__check--field" cols="30" rows="10"></textarea>
                 <span id="addTaskSpan#` + checkListId + `" class="card__about--action">
                   <button type="button" onclick="addCheckListTask(` + checkListId + `)" class="card__about--save">Сохранить</button>
                   <svg class="symbol__close--about">
@@ -397,10 +397,10 @@
                   </svg>
                 </span>`
 
-        parent.insertBefore(checkListTaskAddZone, button)
-        button.remove()
+      parent.insertBefore(checkListTaskAddZone, button)
+      button.remove()
 
-      }
+    }
 
     async function addCheckListTask(checkListId) {
 
@@ -416,7 +416,7 @@
         'checkListId': checkListId
       }
 
-      let response = await fetch('/cards/add_checkList_task',
+      let response = await fetch('/checklists/tasks/add',
               {
                 method: 'POST',
                 headers: {
@@ -461,7 +461,7 @@
         done: done
       }
 
-      await fetch('/cards/change_task_status',
+      await fetch('/checklists/tasks/changeStatus',
               {
                 method: 'PATCH',
                 headers: {
@@ -477,7 +477,7 @@
       document.getElementById('card__attachments--title#' + id).remove()
       document.getElementById('checklistTasks#' + id).remove()
 
-      await fetch("/cards/remove_checklist/" + id, {
+      await fetch("/checklists/remove/" + id, {
         method: 'DELETE'
       })
 
@@ -487,7 +487,7 @@
 
       document.getElementById('card__comment#' + id).remove()
 
-      await fetch("/cards/remove_comment/" + id, {
+      await fetch("/comments/remove/" + id, {
         method: 'DELETE'
       })
     }
@@ -522,7 +522,7 @@
         'text': input.value
       }
 
-      await fetch('/cards/change_comment',
+      await fetch('/comments/change',
               {
                 method: 'PATCH',
                 headers: {
@@ -535,7 +535,7 @@
     async function removeChecklistTask(id) {
         console.log(document.getElementById("checklistTask#" + id))
         document.getElementById("checklistTask#" + id).remove()
-        await fetch("/cards/remove_task/" + id,
+        await fetch("/checklists/tasks/remove/" + id,
                 {
                   method: 'DELETE',
                   headers: {

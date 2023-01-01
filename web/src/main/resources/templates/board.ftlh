@@ -93,18 +93,18 @@
                     </header>
                     <div id="cards${column.id}" class="card__list--cards">
                         <#list column.cards as card>
-                            <div id="card-zone#${card.id}" class="card-zone" draggable="true">
-                                <a class="card__zone-a" id="card#${card.id}" href="/cards/${card.id}">
-                                    <div class="drag_start">
+                            <div id="card-zone#${card.id}" class="card-zone">
+                                <div class="card__zone-a" id="card#${card.id}">
+                                    <div class="drag_start" draggable="true">
                                         <div class="card-container">
-                                            <div class="card-body">
+                                            <a class="card-body" href="/cards/${card.id}">
                                                 <p class="card_name">
                                                     ${card.title}
                                                 </p>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
-                                </a>
+                                </div>
                                 <svg onclick="deleteCard(${card.id})" class="symbol__close--cardAdd--">
                                     <use xlink:href="#close"></use>
                                 </svg>
@@ -258,7 +258,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://www.jsviews.com/download/jsrender.min.js"></script>
 
-<script>
+<script type="text/javascript">
 
     window.onload = dragAndDrop
 
@@ -330,7 +330,7 @@
             "columnId": column_id
         }
 
-        let response = await fetch('http://localhost:8080/boards/add_card', {
+        let response = await fetch('/cards/add_card', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -349,16 +349,15 @@
             let cardBlock = document.createElement('div')
             cardBlock.className = 'card-zone'
             cardBlock.id = 'card-zone#' + card_id
-            cardBlock.draggable = true
 
-            cardBlock.innerHTML = `<a class="card__zone-a" id="card#` + card_id + `" href="/cards/` + card_id + `">
-                                    <div class="drag_start">
+            cardBlock.innerHTML = `<div class="card__zone-a" id="card#` + card_id + `">
+                                    <div class="drag_start" draggable="true">
                                         <div class="card-container">
-                                            <div class="card-body">
+                                            <a href="/cards/` + card_id + `" class="card-body">
                                                 <p class="card_name">
                                                     ` + title + `
                                                 </p>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
                                 </a>
@@ -369,6 +368,7 @@
             cardBlock.ondragstart = drag
 
             cardsHolder.appendChild(cardBlock)
+            await dragAndDrop()
         }
 
     }
@@ -384,7 +384,7 @@
             "boardId": ${board.id}
         }
 
-        let response = await fetch('/boards/add_column', {
+        let response = await fetch('/columns/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -547,14 +547,51 @@
         })
     }
 
-    function dragAndDrop() {
+    async function dragAndDrop() {
 
-        const columns = document.querySelectorAll('.card__list--cards')
+        const columns = document.querySelectorAll('.card-list-container')
         const cards = document.querySelectorAll('.card-zone')
+        columns.forEach((column,item) => {
+                let index = item
+                console.log(item)
+                column.addEventListener('drop', async function (event,index) {
+                event.preventDefault()
+                event.stopPropagation()
 
-        columns.forEach(column => {
+                let dataTransfer = event.dataTransfer
+
+                let cardId = dataTransfer.getData('cardId')
+                let card = document.getElementById(cardId)
+                console.log(card)
+                console.log(columns)
+                console.log(item)
+                console.log(columns[item])
+
+                let oldColumnId = dataTransfer.getData('oldColumnId')
+                let oldColumn = document.getElementById(oldColumnId)
+
+                console.log('oldColumn: ' + oldColumnId)
+                oldColumn.removeChild(card)
+
+                console.log('card: ' + cardId)
+                console.log('target: ' + event.target)
+                columns[item].querySelector('.card__list--cards').append(card);
+                card.querySelector('.drag_start').style.removeProperty('display')
+                console.log(event.target)
+                console.log('newColumnId' + event.target.id.slice(5))
+                let newColumnId = columns[item].id.slice(7)
+                cardId = cardId.slice(10)
+
+                document.getElementById('card#' + cardId).style.removeProperty('display')
+
+                console.log('/cards/move/' + cardId + '/' + newColumnId)
+                  await fetch('/cards/move/' + cardId + '/' + newColumnId,
+                    {
+                        method: 'PATCH'
+                    })
+            })
             column.ondragover = allowDrop
-            column.ondrop = drop
+            column.ondragenter = allowDrop
         })
 
         cards.forEach(card => {
@@ -564,26 +601,32 @@
     }
 
     function allowDrop(event) {
+        console.log('hhhip')
         event.preventDefault()
+        event.stopPropagation()
     }
 
-    async function drop(event) {
+    async function drop(event,column) {
+        event.preventDefault()
+        event.stopPropagation()
 
         let dataTransfer = event.dataTransfer
 
         let cardId = dataTransfer.getData('cardId')
         let card = document.getElementById(cardId)
+        console.log(card)
+        console.log(column)
 
         let oldColumnId = dataTransfer.getData('oldColumnId')
-        let oldColumn = document.getElementById(oldColumnId)
+        let oldColumn = document.getElementById(oldColumnId).querySelector('.card__list--cards')
 
         console.log('oldColumn: ' + oldColumnId)
         oldColumn.removeChild(card)
 
         console.log('card: ' + cardId)
-        console.log('target: ' + event.target.id)
+        console.log('target: ' + event.target)
         await event.target.append(card)
-
+        console.log(event.target)
         console.log('newColumnId' + event.target.id.slice(5))
         let newColumnId = event.target.id.slice(5)
         cardId = cardId.slice(10)
@@ -606,8 +649,10 @@
         }, 0)
 
         let dataTransfer = event.dataTransfer
-        dataTransfer.setData('cardId', card.parentNode.id)
-        dataTransfer.setData('oldColumnId', card.parentNode.parentNode.id)
+        dataTransfer.dropEffect = 'move'
+        dataTransfer.effectAllowed = 'move'
+        dataTransfer.setData('cardId', card.parentNode.parentNode.id)
+        dataTransfer.setData('oldColumnId', card.parentNode.parentNode.parentNode.id)
     }
 
 </script>

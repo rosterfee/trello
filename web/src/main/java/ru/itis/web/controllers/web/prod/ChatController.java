@@ -40,7 +40,6 @@ public class ChatController {
         }
 
         return receivePayload;
-
     }
 
 }

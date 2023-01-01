@@ -1395,11 +1395,18 @@ body, html {
 }
 
 .card-body {
-    padding: .8rem .8rem
+    width: 100%;
+    padding: .8rem .8rem;
+    text-decoration: none;
+    color: black;
+}
+
+.card_name{
+    padding: 0 0.8rem;
 }
 
 p {
-    font-size: .7rem
+    font-size: 1rem
 }
 
 .card__list--title {
@@ -1423,7 +1430,14 @@ p {
 .drag_start {
     background: #fff;
     width: 100%;
+    text-decoration: none;
+    color: black;
     height: auto
+}
+
+.card-body:hover{
+    text-decoration: none;
+    color: black;
 }
 
 [draggable=true] {

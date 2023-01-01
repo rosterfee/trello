@@ -13,12 +13,10 @@ public class LoginController {
     @GetMapping
     public String getLoginPage(@RequestParam(value = "status", required = false) String status,
                                Model model) {
-
         if (status != null && status.equals("error")) {
             model.addAttribute("error", "error");
         }
         return "login";
-
     }
 
 }

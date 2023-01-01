@@ -1,42 +1,60 @@
 package ru.itis.web.controllers.web.prod;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.itis.api.dtos.web.*;
 import ru.itis.api.exceptions.ResourceNotFoundException;
 import ru.itis.api.services.BoardsService;
-import ru.itis.api.services.CardsService;
-import ru.itis.api.services.ColumnsService;
 import ru.itis.api.services.UsersService;
 import ru.itis.impl.utils.UserInitialsGenerator;
 
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Controller
 @RequestMapping("boards")
 public class BoardsController {
 
-    @Autowired
-    private BoardsService boardsService;
+    private final BoardsService boardsService;
+    private final UsersService usersService;
 
-    @Autowired
-    private ColumnsService columnsService;
+    private final List<String> options = Arrays.asList("private", "public");
 
-    @Autowired
-    private CardsService cardsService;
 
-    @Autowired
-    private UsersService usersService;
+    public BoardsController(BoardsService boardsService, UsersService usersService) {
+        this.boardsService = boardsService;
+        this.usersService = usersService;
+    }
+
+    @PostMapping("create")
+    public String createBoard(@Valid @ModelAttribute BoardCreatingForm form,
+                              BindingResult bindingResult,
+                              Model model,
+                              @AuthenticationPrincipal UserDTO user) throws IOException {
+
+        System.out.println(form.getType());
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("options", options);
+            model.addAttribute(user);
+            model.addAttribute("boardCreatingForm", form);
+            model.addAttribute("initials", UserInitialsGenerator.generate(user.getName()));
+            return "home";
+        }
+        else {
+            boardsService.save(form, user);
+            return "redirect:/boards/" + form.getName();
+        }
+
+    }
 
     @GetMapping("{board_name}")
     public String getBoardPage(Model model,
@@ -47,9 +65,11 @@ public class BoardsController {
         if (optionalBoardDTO.isPresent()) {
 
             BoardDTO board = optionalBoardDTO.get();
+
+            board.getColumns().forEach(column -> Collections.sort(column.getCards()));
+
             boardsService.addBoardParticipant(board, user);
 
-//            Collections.sort(board.getColumns());
             model.addAttribute("board", board);
             model.addAttribute("user", user);
 
@@ -58,38 +78,6 @@ public class BoardsController {
         else {
             throw new ResourceNotFoundException("Board not found");
         }
-    }
-
-    @ResponseBody
-    @PostMapping(value = "add_card")
-    public ResponseEntity<CardCreatingReturnDTO> addCard(@RequestBody CardCreatingDto cardCreatingDto) throws JsonProcessingException {
-
-        Optional<Long> optionalId = cardsService.save(cardCreatingDto.getTitle(),
-                cardCreatingDto.getColumnId());
-
-        if (optionalId.isPresent()) {
-            CardCreatingReturnDTO returnDTO = new CardCreatingReturnDTO(optionalId.get());
-            return ResponseEntity.ok(returnDTO);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "column with " +
-                    "such id not found");
-        }
-
-    }
-
-    @ResponseBody
-    @PostMapping(value = "add_column")
-    public ResponseEntity<ColumnCreatingReturnDTO> addColumn(
-            @RequestBody ColumnCreatingDto columnCreatingDto) {
-
-        String name = columnCreatingDto.getName();
-        Long boardId = columnCreatingDto.getBoardId();
-
-        Long id = columnsService.addColumn(name, boardId);
-        ColumnCreatingReturnDTO returnDto = new ColumnCreatingReturnDTO(id);
-
-        return ResponseEntity.ok(returnDto);
     }
 
     @ResponseBody
